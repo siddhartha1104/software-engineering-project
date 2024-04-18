@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .chatbox {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            overflow-y: scroll;
+            max-height: 300px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message .sender {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .message .time {
+            font-size: 0.8em;
+            color: #999;
+            margin-left: 10px;
+        }
+        input[type="text"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .back-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+        .remove-chat-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-chat-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Group Chat</h2>
+    <div class="chatbox" id="chatbox">
+        <!-- Chat messages will be displayed here -->
+    </div>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <input type="submit" value="Send">
+    </form>
+
+    <button class="back-button" onclick="goToHomePage()">Go to Home Page</button>
+    <button class="remove-chat-button" onclick="removeAllChat()">Remove All Chat</button>
+</div>
+
+<script>
+    // Function to display messages in the chatbox
+    function displayMessages() {
+        var chatbox = document.getElementById("chatbox");
+        chatbox.innerHTML = ""; // Clear existing messages
+
+        var chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+
+        chatMessages.forEach(function(message) {
+            var div = document.createElement("div");
+            div.className = "message";
+            div.innerHTML = "<span class='sender'>" + message.sender + ": </span>" + message.text + "<span class='time'>" + message.time + "</span>";
+            chatbox.appendChild(div);
+        });
+
+        // Scroll to the bottom of the chatbox
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // Function to handle form submission (sending messages)
+    document.getElementById("messageForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+        var messageInput = document.getElementById("messageInput");
+        var messageText = messageInput.value.trim();
+        if (messageText !== "") {
+            // Create a new message object
+            var newMessage = {
+                sender: "User", // You can set the sender dynamically based on user information
+                text: messageText,
+                time: new Date().toLocaleTimeString()
+            };
+
+            var chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+            chatMessages.push(newMessage); // Add the new message to the array
+            localStorage.setItem('chatMessages', JSON.stringify(chatMessages)); // Save messages to localStorage
+            displayMessages(); // Update the chatbox
+            messageInput.value = ""; // Clear the input field
+        }
+    });
+
+    // Display any existing messages on page load
+    displayMessages();
+
+    function goToHomePage() {
+        // Redirect to the home page
+        window.location.href = "home.html";
+    }
+
+    // Function to remove all chat messages
+    function removeAllChat() {
+        localStorage.removeItem('chatMessages');
+        displayMessages(); // Update the chatbox
+    }
+</script>
+
+</body>
+</html>
